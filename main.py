@@ -46,24 +46,28 @@ if __name__ == '__main__':
     except sqlite3.Error as err:
         logging.exception("Error occurred while recreating settings table")
 
+    try:
+        fill_table_query = "INSERT INTO settings(url) VALUES('url');"
+        cursor.execute(fill_table_query)
+        conn.commit()
+    except sqlite3.Error as err:
+        logging.exception("Error occurred while filling settings table")
 
-    cursor.execute("""INSERT INTO settings(url) VALUES('url');
-    """)
-    conn.commit()
-
-    cursor.execute("SELECT * FROM settings;")
-    conn.commit()
-
-    cur_settings = cursor.fetchone()
-    print("settings")
-    print(cur_settings)
-
+    try:
+        select_everything_from_settings_table_query = "SELECT * FROM settings;"
+        cursor.execute(select_everything_from_settings_table_query)
+        conn.commit()
+        cur_settings = cursor.fetchone()
+        print("settings")
+        print(cur_settings)
+        print()
+    except sqlite3.Error as err:
+        logging.exception("Error occurred while selecting from settings table")
 
     token = "c8c03d3a7321ea0ba36ebe1e46de06b7083d9d5e"
     dadata = Dadata(token)
 
     # print("balans = ", dadata.get_balance())
-
 
     print("Che nada")
     # query = input()
