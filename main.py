@@ -2,6 +2,7 @@ from dadata import Dadata
 
 import json
 import sqlite3
+import logging
 
 
 def safe_cast(val, to_type, default=None):
@@ -27,19 +28,24 @@ if __name__ == '__main__':
     conn = sqlite3.connect('settings.db')
     cursor = conn.cursor()
 
-    #
-    #
-    cursor.execute("""DROP TABLE IF EXISTS settings
-    """)
+    # TEST usage only. Delete before real using. Dropping and creating settings table
+    try:
+        drop_table_query = "DROP TABLE IF EXISTS settings"
+        cursor.execute(drop_table_query)
+        conn.commit()
 
-    cursor.execute("""CREATE TABLE IF NOT EXISTS settings(
-        userid INTEGER PRIMARY KEY AUTOINCREMENT,
-        url TEXT,
-        apikey TEXT DEFAULT 'c8c03d3a7321ea0ba36ebe1e46de06b7083d9d5e' NOT NULL,
-        language TEXT DEFAULT ru NOT NULL
-        );   
-    """)
-    conn.commit()
+        create_table_query = "CREATE TABLE IF NOT EXISTS settings(\
+            userid INTEGER PRIMARY KEY AUTOINCREMENT,\
+            url TEXT,\
+            apikey TEXT DEFAULT 'c8c03d3a7321ea0ba36ebe1e46de06b7083d9d5e' NOT NULL,\
+            language TEXT DEFAULT ru NOT NULL\
+            );\
+        "
+        cursor.execute(create_table_query)
+        conn.commit()
+    except sqlite3.Error as err:
+        logging.exception("Error occurred while recreating settings table")
+
 
     cursor.execute("""INSERT INTO settings(url) VALUES('url');
     """)
