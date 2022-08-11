@@ -28,30 +28,34 @@ if __name__ == '__main__':
     conn = sqlite3.connect('settings.db')
     cursor = conn.cursor()
 
-    # TEST usage only. Delete before real using. Dropping and creating settings table
-    try:
-        drop_table_query = "DROP TABLE IF EXISTS settings"
-        cursor.execute(drop_table_query)
-        conn.commit()
+    testing_marker = True
 
-        create_table_query = "CREATE TABLE IF NOT EXISTS settings(\
-            userid INTEGER PRIMARY KEY AUTOINCREMENT,\
-            url TEXT,\
-            apikey TEXT DEFAULT 'c8c03d3a7321ea0ba36ebe1e46de06b7083d9d5e' NOT NULL,\
-            language TEXT DEFAULT ru NOT NULL\
-            );\
-        "
-        cursor.execute(create_table_query)
-        conn.commit()
-    except sqlite3.Error as err:
-        logging.exception("Error occurred while recreating settings table")
+    if testing_marker:
+        # TEST usage only. Delete before real using. Dropping and creating settings table
+        try:
+            drop_table_query = "DROP TABLE IF EXISTS settings"
+            cursor.execute(drop_table_query)
+            conn.commit()
 
-    try:
-        fill_table_query = "INSERT INTO settings(url) VALUES('url');"
-        cursor.execute(fill_table_query)
-        conn.commit()
-    except sqlite3.Error as err:
-        logging.exception("Error occurred while filling settings table")
+    # TODO: apikey NOT NULL ?
+            create_table_query = "CREATE TABLE IF NOT EXISTS settings(\
+                userid INTEGER PRIMARY KEY AUTOINCREMENT,\
+                url TEXT DEFAULT 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address' NOT NULL,\
+                apikey TEXT,\
+                language TEXT DEFAULT ru NOT NULL\
+                );\
+            "
+            cursor.execute(create_table_query)
+            conn.commit()
+        except sqlite3.Error as err:
+            logging.exception("Error occurred while recreating settings table")
+
+        try:
+            fill_table_query = "INSERT INTO settings(url) VALUES('url');"
+            cursor.execute(fill_table_query)
+            conn.commit()
+        except sqlite3.Error as err:
+            logging.exception("Error occurred while filling settings table")
 
     try:
         select_everything_from_settings_table_query = "SELECT * FROM settings;"
